@@ -1,0 +1,23 @@
+{
+  "name": "noita-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Noita website REST API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch server.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "author": "Nicolas Chambon",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
