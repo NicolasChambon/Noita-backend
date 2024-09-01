@@ -2,22 +2,29 @@
   "name": "noita-backend",
   "version": "1.0.0",
   "type": "module",
-  "description": "Noita website REST API",
-  "main": "server.js",
+  "description": "Noïta choir website API",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch server.js",
-    "lint": "eslint .",
-    "format": "prettier --write ."
+    "start": "nodemon src/index.js"
   },
-  "author": "Nicolas Chambon",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3"
+  },
   "devDependencies": {
+    "@eslint/js": "^9.9.1",
     "eslint": "^9.9.1",
     "eslint-config-prettier": "^9.1.0",
-    "prettier": "^3.3.3"
-  },
-  "dependencies": {
-    "dotenv": "^16.4.5"
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.9.0",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.3",
+    "sequelize-cli": "^6.6.2"
   }
 }
