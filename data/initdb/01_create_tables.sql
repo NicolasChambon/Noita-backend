@@ -5,15 +5,15 @@ CREATE TABLE IF NOT EXISTS "admin" (
   "username" text NOT NULL UNIQUE,
   "password_hash" text NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT now(),
-  "updated_at" timestamptz,
-)
+  "updated_at" timestamptz
+);
 
 CREATE TABLE IF NOT EXISTS "carousel_picture" (
   "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "url" text NOT NULL UNIQUE,
   "created_at" timestamptz NOT NULL DEFAULT now(),
-  "updated_at" timestamptz,
-)
+  "updated_at" timestamptz
+);
 
 CREATE TABLE IF NOT EXISTS "concert" (
   "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS "concert" (
   "event_name" text,
   "event_url" text,
   "created_at" timestamptz NOT NULL DEFAULT now(),
-  "updated_at" timestamptz,
-)
+  "updated_at" timestamptz
+);
 
 CREATE TABLE IF NOT EXISTS "post" (
   "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS "post" (
   "content_de" text NOT NULL,
   "image_url" text NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT now(),
-  "updated_at" timestamptz,
+  "updated_at" timestamptz
+);
 
 COMMIT;

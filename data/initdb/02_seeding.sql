@@ -1,4 +1,4 @@
-BEGIN
+BEGIN;
 
 INSERT INTO
   "carousel_picture" ("url")
@@ -12,9 +12,9 @@ VALUES
 INSERT INTO
   "concert" ("city", "event_date", "venue", "event_name", "event_url")
 VALUES
-  ('Zurich', '2024-01-03', 'Venue 1', 'Event 1', 'https://www.example.com/event1'),
-  ('Geneva', '2024-25-05', 'Venue 2', 'Event 2', 'https://www.example.com/event2'),
-  ('Lausanne', '2024-07-09', 'Venue 3', 'Event 3', 'https://www.example.com/event3'),
+  ('Zurich', '2024-03-01', 'Venue 1', 'Event 1', 'https://www.example.com/event1'),
+  ('Geneva', '2024-05-25', 'Venue 2', 'Event 2', 'https://www.example.com/event2'),
+  ('Lausanne', '2024-09-07', 'Venue 3', 'Event 3', 'https://www.example.com/event3'),
   ('Basel', '2024-11-11', 'Venue 4', 'Event 4', 'https://www.example.com/event4');
 
 INSERT INTO
