@@ -9,6 +9,8 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+app.use(express.json());
+
 // Establish database connection
 // ()() syntax is used to call the asynchronous function directly after defining it
 (async () => {
