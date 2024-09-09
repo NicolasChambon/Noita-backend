@@ -30,7 +30,7 @@ const adminController = {
       if (!admin) {
         return res
           .status(401)
-          .json({ message: 'Invalid username or password.' });
+          .json({ errors: 'Invalid username or password.' });
       }
 
       // Check if the password is correct
@@ -42,7 +42,7 @@ const adminController = {
         if (!valid) {
           return res
             .status(401)
-            .json({ message: 'Invalid username or password.' });
+            .json({ errors: 'Invalid username or password.' });
         }
         res.status(200).json({
           message: 'Login successful.',
@@ -58,14 +58,14 @@ const adminController = {
         console.error('Error while logging in.', error.message);
         res.status(500).json({
           message: 'Error while logging in.',
-          error: error.message,
+          errors: error.message,
         });
       }
     } catch (error) {
       console.error('Error while logging in', error.message);
       res.status(500).json({
         message: 'Error while logging in.',
-        error: error.message,
+        errors: error.message,
       });
     }
   },
