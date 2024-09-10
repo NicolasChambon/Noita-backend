@@ -8,15 +8,14 @@ export const auth = async (req, res, next) => {
     const tokenUserId = decodedToken.id;
 
     if (parseInt(req.query.user_id) !== tokenUserId) {
-      console.log('Invalid user ID');
-      throw 'Invalid user ID';
+      throw 'Invalid user ID.';
     } else {
       next();
     }
   } catch (error) {
     console.error('Error while checking user', error.errors);
     res.status(401).json({
-      errors: ['User not authenticated'],
+      errors: ['User not authenticated.'],
       status: 401,
     });
   }

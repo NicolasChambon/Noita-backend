@@ -6,7 +6,7 @@ import { auth } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.get('/', auth, concertController.getAllConcerts);
+router.get('/', concertController.getAllConcerts);
 router.get('/:id', auth, concertController.getConcert);
 router.post('/', auth, concertController.createConcert);
 router.put('/:id', auth, concertController.updateConcert);
