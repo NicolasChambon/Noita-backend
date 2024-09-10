@@ -17,6 +17,22 @@ const concertController = {
     }
   },
 
+  getConcert: async (req, res) => {
+    try {
+      const concert = await Concert.findByPk(req.params.id);
+      if (!concert) {
+        return res.status(404).send({ message: 'Concert not found' });
+      }
+      res.status(200).json(concert);
+    } catch (error) {
+      console.error('Error while getting concert', error.message);
+      res.status(500).json({
+        message: 'Error while getting concert',
+        error: error.message,
+      });
+    }
+  },
+
   createConcert: async (req, res) => {
     // Validate request
     const errorMessages = [];
@@ -49,6 +65,46 @@ const concertController = {
       console.error('Error while creating concert', error.message);
       res.status(500).json({
         message: 'Error while creating concert',
+        error: error.message,
+      });
+    }
+  },
+
+  updateConcert: async (req, res) => {
+    // Validate request
+    const errorMessages = [];
+    if (!req.body.city) {
+      errorMessages.push('City is required.');
+    }
+    if (!req.body.eventDate) {
+      errorMessages.push('Event date is required.');
+    }
+    if (!req.body.venue && !req.body.eventName) {
+      errorMessages.push('Venue or event name is required.');
+    }
+    if (!req.body.link) {
+      errorMessages.push('Link is required.');
+    }
+    if (errorMessages.length > 0) {
+      return res.status(400).json({ errors: errorMessages });
+    }
+
+    try {
+      const concert = await Concert.findByPk(req.params.id);
+      if (!concert) {
+        return res.status(404).send({ message: 'Concert not found' });
+      }
+      concert.city = req.body.city;
+      concert.event_date = req.body.eventDate;
+      concert.venue = req.body.venue;
+      concert.event_name = req.body.eventName;
+      concert.event_url = req.body.link;
+      await concert.save();
+      res.status(200).json(concert);
+    } catch (error) {
+      console.error('Error while updating concert', error.message);
+      res.status(500).json({
+        message: 'Error while updating concert',
         error: error.message,
       });
     }
