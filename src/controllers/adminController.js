@@ -30,7 +30,7 @@ const adminController = {
       if (!admin) {
         return res
           .status(401)
-          .json({ errors: 'Invalid username or password.' });
+          .json({ errors: ['Invalid username or password.'] });
       }
 
       // Check if the password is correct
@@ -42,7 +42,7 @@ const adminController = {
         if (!valid) {
           return res
             .status(401)
-            .json({ errors: 'Invalid username or password.' });
+            .json({ errors: ['Invalid username or password.'] });
         }
         res.status(200).json({
           message: 'Login successful.',
@@ -51,7 +51,7 @@ const adminController = {
             username: admin.username,
           },
           token: jwt.sign({ id: admin.id }, process.env.JWT_SECRET, {
-            expiresIn: 60,
+            expiresIn: '30m',
           }),
         });
       } catch (error) {
