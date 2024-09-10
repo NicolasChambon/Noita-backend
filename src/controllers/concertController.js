@@ -3,7 +3,10 @@ import Concert from '../models/concert.js';
 const concertController = {
   getAllConcerts: async (req, res) => {
     try {
-      const concerts = await Concert.findAll();
+      // Find all concerts sorted by event date
+      const concerts = await Concert.findAll({
+        order: [['event_date', 'DESC']],
+      });
       if (!concerts) {
         return res.status(404).send({ message: 'No concert found' });
       }
@@ -105,6 +108,23 @@ const concertController = {
       console.error('Error while updating concert', error.message);
       res.status(500).json({
         message: 'Error while updating concert',
+        error: error.message,
+      });
+    }
+  },
+
+  deleteConcert: async (req, res) => {
+    try {
+      const concert = await Concert.findByPk(req.params.id);
+      if (!concert) {
+        return res.status(404).send({ message: 'Concert not found' });
+      }
+      await concert.destroy();
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error while deleting concert', error.message);
+      res.status(500).json({
+        message: 'Error while deleting concert',
         error: error.message,
       });
     }
