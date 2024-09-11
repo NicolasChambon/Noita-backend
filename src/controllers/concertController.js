@@ -120,7 +120,7 @@ const concertController = {
         return res.status(404).send({ message: 'Concert not found' });
       }
       await concert.destroy();
-      res.status(204).send();
+      res.status(200).send({ message: 'Concert deleted successfully' });
     } catch (error) {
       console.error('Error while deleting concert', error.message);
       res.status(500).json({

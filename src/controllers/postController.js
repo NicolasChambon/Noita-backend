@@ -171,22 +171,25 @@ const postController = {
     }
   },
 
-  // deletePost: async (req, res) => {
-  //   try {
-  //     const post = await Post.findByPk(req.params.id);
-  //     if (!post) {
-  //       return res.status(404).send({ message: 'Post not found' });
-  //     }
-  //     await post.destroy();
-  //     res.status(204).send();
-  //   } catch (error) {
-  //     console.error('Error while deleting post', error.message);
-  //     res.status(500).json({
-  //       message: 'Error while deleting post',
-  //       error: error.message,
-  //     });
-  //   }
-  // },
+  // in deletePost function, we will delete the post image from the file system
+  deletePost: async (req, res) => {
+    try {
+      const post = await Post.findByPk(req.params.id);
+      if (!post) {
+        return res.status(404).send({ message: 'Post not found' });
+      }
+      const imagePath = path.join(__dirname, `../../public${post.image_url}`);
+      fs.unlinkSync(imagePath);
+      await post.destroy();
+      res.status(200).send({ message: 'Post deleted successfully' });
+    } catch (error) {
+      console.error('Error while deleting post', error.message);
+      res.status(500).json({
+        message: 'Error while deleting post',
+        error: error.message,
+      });
+    }
+  },
 };
 
 export default postController;
