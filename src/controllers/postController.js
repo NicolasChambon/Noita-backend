@@ -108,45 +108,68 @@ const postController = {
     }
   },
 
-  // updatePost: async (req, res) => {
-  //   // Validate request
-  //   const errorMessages = [];
-  //   if (!req.body.city) {
-  //     errorMessages.push('City is required.');
-  //   }
-  //   if (!req.body.eventDate) {
-  //     errorMessages.push('Event date is required.');
-  //   }
-  //   if (!req.body.venue && !req.body.eventName) {
-  //     errorMessages.push('Venue or event name is required.');
-  //   }
-  //   if (!req.body.link) {
-  //     errorMessages.push('Link is required.');
-  //   }
-  //   if (errorMessages.length > 0) {
-  //     return res.status(400).json({ errors: errorMessages });
-  //   }
+  updatePost: async (req, res) => {
+    // Validate request
+    const errorMessages = [];
+    if (!req.body.titleFr) {
+      errorMessages.push('French title is required.');
+    }
+    if (!req.body.titleDe) {
+      errorMessages.push('German title is required.');
+    }
+    if (!req.body.contentFr) {
+      errorMessages.push('French content is required.');
+    }
+    if (!req.body.contentDe) {
+      errorMessages.push('German content is required.');
+    }
 
-  //   try {
-  //     const post = await Post.findByPk(req.params.id);
-  //     if (!post) {
-  //       return res.status(404).send({ message: 'Post not found' });
-  //     }
-  //     post.city = req.body.city;
-  //     post.event_date = req.body.eventDate;
-  //     post.venue = req.body.venue;
-  //     post.event_name = req.body.eventName;
-  //     post.event_url = req.body.link;
-  //     await post.save();
-  //     res.status(200).json(post);
-  //   } catch (error) {
-  //     console.error('Error while updating post', error.message);
-  //     res.status(500).json({
-  //       message: 'Error while updating post',
-  //       error: error.message,
-  //     });
-  //   }
-  // },
+    if (errorMessages.length > 0) {
+      return res.status(400).json({ errors: errorMessages });
+    }
+
+    const imageName = `post-${req.params.id}.png`;
+    if (req.body.img64) {
+      // Extract image data and define image path and name to save it
+      const imageData = req.body.img64.split(',')[1];
+      const imagePath = path.join(
+        __dirname,
+        `../../public/images/${imageName}`
+      );
+
+      // Save image to file system
+      try {
+        await writeFileAsync(imagePath, Buffer.from(imageData, 'base64'));
+        console.log('Image saved successfully');
+      } catch (error) {
+        console.error('Error while saving image', error.message);
+        return res.status(500).json({
+          message: 'Error while saving image',
+          error: error.message,
+        });
+      }
+    }
+
+    try {
+      const post = await Post.findByPk(req.params.id);
+      if (!post) {
+        return res.status(404).send({ message: 'Post not found' });
+      }
+      post.title_fr = req.body.titleFr;
+      post.title_de = req.body.titleDe;
+      post.content_fr = req.body.contentFr;
+      post.content_de = req.body.contentDe;
+      post.image_url = `/images/${imageName}`;
+      await post.save();
+      res.status(200).json(post);
+    } catch (error) {
+      console.error('Error while updating post', error.message);
+      res.status(500).json({
+        message: 'Error while updating post',
+        error: error.message,
+      });
+    }
+  },
 
   // deletePost: async (req, res) => {
   //   try {

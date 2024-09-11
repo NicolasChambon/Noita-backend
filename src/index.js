@@ -10,6 +10,9 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+// Serve static files from the "public" directory
+app.use(express.static('public'));
+
 app.use(express.json({ limit: '1mb', extended: true }));
 
 app.use(cors());
