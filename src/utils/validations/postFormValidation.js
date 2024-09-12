@@ -15,9 +15,7 @@ const postFormValidation = (req, type) => {
   if (!req.body.img64 && type === 'create') {
     errorMessages.push('Image is required.');
   }
-  if (errorMessages.length > 0) {
-    return errorMessages;
-  }
+  return errorMessages;
 };
 
 export default postFormValidation;

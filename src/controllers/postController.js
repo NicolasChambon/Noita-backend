@@ -1,7 +1,6 @@
 // Dependencies
 import path from 'path';
 import fs from 'fs';
-import { promisify } from 'util'; // Provides a set of functions for working with asynchronous code
 import { fileURLToPath } from 'url'; // Provides utilities for URL resolution and parsing
 
 // Models
@@ -9,9 +8,9 @@ import Post from '../models/post.js';
 
 // Utils
 import postFormValidation from '../utils/validations/postFormValidation.js';
+import imageUpload from '../utils/upload/imageUpload.js';
 
-// File system functions for image handling
-const writeFileAsync = promisify(fs.writeFile); // Allows to use async/await with fs functions
+// File system variables for image handling
 const __filename = fileURLToPath(import.meta.url); // /var/www/html/Noita/Noita-backend/src/controllers/postController.js
 const __dirname = path.dirname(__filename); // /var/www/html/Noita/Noita-backend/src/controllers
 
@@ -58,22 +57,17 @@ const postController = {
       return res.status(400).json({ errors: errorMessages });
     }
 
-    // Extract image data and define image path and name to save it
-    const imageData = req.body.img64.split(',')[1];
+    // Extract image data and define image id and name to save it
     const newId = (await Post.max('id')) + 1;
     const imageName = `post-${newId}.png`;
-    const imagePath = path.join(__dirname, `../../public/images/${imageName}`);
+    const imageData = req.body.img64.split(',')[1];
 
     // Save image to file system
-    try {
-      // Buffer is a global object that can be used to convert data to different encoding types
-      await writeFileAsync(imagePath, Buffer.from(imageData, 'base64'));
-      console.log('Image saved successfully');
-    } catch (error) {
-      console.error('Error while saving image', error.message);
+    const imageUploadResult = await imageUpload(imageData, imageName);
+    if (imageUploadResult.error) {
       return res.status(500).json({
         message: 'Error while saving image',
-        error: error.message,
+        error: imageUploadResult.error,
       });
     }
 
@@ -104,22 +98,14 @@ const postController = {
 
     const imageName = `post-${req.params.id}.png`;
     if (req.body.img64) {
-      // Extract image data and define image path and name to save it
       const imageData = req.body.img64.split(',')[1];
-      const imagePath = path.join(
-        __dirname,
-        `../../public/images/${imageName}`
-      );
 
       // Save image to file system
-      try {
-        await writeFileAsync(imagePath, Buffer.from(imageData, 'base64'));
-        console.log('Image saved successfully');
-      } catch (error) {
-        console.error('Error while saving image', error.message);
+      const imageUploadResult = await imageUpload(imageData, imageName);
+      if (imageUploadResult.error) {
         return res.status(500).json({
           message: 'Error while saving image',
-          error: error.message,
+          error: imageUploadResult.error,
         });
       }
     }
@@ -145,15 +131,17 @@ const postController = {
     }
   },
 
-  // in deletePost function, we will delete the post image from the file system
   deletePost: async (req, res) => {
     try {
       const post = await Post.findByPk(req.params.id);
       if (!post) {
         return res.status(404).send({ message: 'Post not found' });
       }
+
+      // Delete image from file system
       const imagePath = path.join(__dirname, `../../public${post.image_url}`);
       fs.unlinkSync(imagePath);
+
       await post.destroy();
       res.status(200).send({ message: 'Post deleted successfully' });
     } catch (error) {

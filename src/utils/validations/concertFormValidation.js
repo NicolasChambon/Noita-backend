@@ -12,9 +12,7 @@ const concertFormValidation = (req) => {
   if (!req.body.link) {
     errorMessages.push('Link is required.');
   }
-  if (errorMessages.length > 0) {
-    return errorMessages;
-  }
+  return errorMessages;
 };
 
 export default concertFormValidation;
