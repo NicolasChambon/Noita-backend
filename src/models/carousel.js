@@ -1,9 +1,9 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
-class CarouselPicture extends Model {}
+class Carousel extends Model {}
 
-CarouselPicture.init(
+Carousel.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -26,4 +26,4 @@ CarouselPicture.init(
   }
 );
 
-export default CarouselPicture;
+export default Carousel;
