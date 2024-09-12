@@ -7,6 +7,9 @@ import { fileURLToPath } from 'url'; // Provides utilities for URL resolution an
 // Models
 import Post from '../models/post.js';
 
+// Utils
+import postFormValidation from '../utils/validations/postFormValidation.js';
+
 // File system functions for image handling
 const writeFileAsync = promisify(fs.writeFile); // Allows to use async/await with fs functions
 const __filename = fileURLToPath(import.meta.url); // /var/www/html/Noita/Noita-backend/src/controllers/postController.js
@@ -50,23 +53,7 @@ const postController = {
 
   createPost: async (req, res) => {
     // Validate request
-    const errorMessages = [];
-    if (!req.body.titleFr) {
-      errorMessages.push('French title is required.');
-    }
-    if (!req.body.titleDe) {
-      errorMessages.push('German title is required.');
-    }
-    if (!req.body.contentFr) {
-      errorMessages.push('French content is required.');
-    }
-    if (!req.body.contentDe) {
-      errorMessages.push('German content is required.');
-    }
-    if (!req.body.img64) {
-      errorMessages.push('Image is required.');
-    }
-
+    const errorMessages = postFormValidation(req, 'create');
     if (errorMessages.length > 0) {
       return res.status(400).json({ errors: errorMessages });
     }
@@ -110,20 +97,7 @@ const postController = {
 
   updatePost: async (req, res) => {
     // Validate request
-    const errorMessages = [];
-    if (!req.body.titleFr) {
-      errorMessages.push('French title is required.');
-    }
-    if (!req.body.titleDe) {
-      errorMessages.push('German title is required.');
-    }
-    if (!req.body.contentFr) {
-      errorMessages.push('French content is required.');
-    }
-    if (!req.body.contentDe) {
-      errorMessages.push('German content is required.');
-    }
-
+    const errorMessages = postFormValidation(req, 'update');
     if (errorMessages.length > 0) {
       return res.status(400).json({ errors: errorMessages });
     }

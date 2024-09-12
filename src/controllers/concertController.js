@@ -1,4 +1,8 @@
+// Models
 import Concert from '../models/concert.js';
+
+// Utils
+import concertFormValidation from '../utils/validations/concertFormValidation.js';
 
 const concertController = {
   getAllConcerts: async (req, res) => {
@@ -38,19 +42,7 @@ const concertController = {
 
   createConcert: async (req, res) => {
     // Validate request
-    const errorMessages = [];
-    if (!req.body.city) {
-      errorMessages.push('City is required.');
-    }
-    if (!req.body.eventDate) {
-      errorMessages.push('Event date is required.');
-    }
-    if (!req.body.venue && !req.body.eventName) {
-      errorMessages.push('Venue or event name is required.');
-    }
-    if (!req.body.link) {
-      errorMessages.push('Link is required.');
-    }
+    const errorMessages = concertFormValidation(req);
     if (errorMessages.length > 0) {
       return res.status(400).json({ errors: errorMessages });
     }
@@ -75,19 +67,7 @@ const concertController = {
 
   updateConcert: async (req, res) => {
     // Validate request
-    const errorMessages = [];
-    if (!req.body.city) {
-      errorMessages.push('City is required.');
-    }
-    if (!req.body.eventDate) {
-      errorMessages.push('Event date is required.');
-    }
-    if (!req.body.venue && !req.body.eventName) {
-      errorMessages.push('Venue or event name is required.');
-    }
-    if (!req.body.link) {
-      errorMessages.push('Link is required.');
-    }
+    const errorMessages = concertFormValidation(req);
     if (errorMessages.length > 0) {
       return res.status(400).json({ errors: errorMessages });
     }
