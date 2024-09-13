@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url'; // Provides utilities for URL resolution an
 
 // Database
 import sequelize from '../config/database.js';
+import { Op } from 'sequelize';
 
 // Models
 import Carousel from '../models/carousel.js';
@@ -69,6 +70,55 @@ const carouselController = {
       console.error('Error while creating picture', error.message);
       res.status(500).json({
         message: 'Error while creating picture',
+        error: error.message,
+      });
+    }
+  },
+
+  deletePicture: async (req, res) => {
+    const t = await sequelize.transaction();
+
+    try {
+      // Find the picture to delete
+      const picture = await Carousel.findByPk(req.params.id, {
+        transaction: t,
+      });
+      if (!picture) {
+        return res.status(404).send({ message: 'Picture not found' });
+      }
+
+      // Delete the picture from the database
+      await picture.destroy({ transaction: t });
+
+      // We decrement the position of all the pictures that were after the deleted one
+      await Carousel.update(
+        // sequelize.literal() is used to perform operations on the database
+        // UPDATE carousel_picture SET position = position - 1 WHERE position > picture.position
+        { position: sequelize.literal('position - 1') },
+        {
+          where: {
+            position: {
+              // Op.gt = greater than
+              // WHERE position > picture.position
+              [Op.gt]: picture.position,
+            },
+          },
+          transaction: t,
+        }
+      );
+
+      await t.commit();
+
+      // Delete the image from the file system if transaction is successful
+      const imagePath = path.join(__dirname, `../../public${picture.url}`);
+      fs.unlinkSync(imagePath);
+
+      res.status(200).json({ message: 'Picture deleted and position updated' });
+    } catch (error) {
+      await t.rollback(); // Rollback the transaction
+      console.error('Error while deleting picture', error.message);
+      res.status(500).json({
+        message: 'Error while deleting picture',
         error: error.message,
       });
     }

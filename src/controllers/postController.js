@@ -57,28 +57,32 @@ const postController = {
       return res.status(400).json({ errors: errorMessages });
     }
 
-    // Extract image data and define image id and name to save it
-    const newId = (await Post.max('id')) + 1;
-    const imageName = `post-${newId}.png`;
-    const imageData = req.body.img64.split(',')[1];
-
-    // Save image to file system
-    const imageUploadResult = await imageUpload(imageData, imageName);
-    if (imageUploadResult.error) {
-      return res.status(500).json({
-        message: 'Error while saving image',
-        error: imageUploadResult.error,
-      });
-    }
-
     try {
       const post = await Post.create({
         title_fr: req.body.titleFr,
         title_de: req.body.titleDe,
         content_fr: req.body.contentFr,
         content_de: req.body.contentDe,
-        image_url: `/images/${imageName}`,
+        image_url: 'temp',
       });
+
+      // We use the id of the new post to name the image
+      const imageName = `post-${post.id}.png`;
+      const imageData = req.body.img64.split(',')[1];
+
+      // Save image to file system
+      const imageUploadResult = await imageUpload(imageData, imageName);
+      if (imageUploadResult.error) {
+        await post.destroy();
+        return res.status(500).json({
+          message: 'Error while saving image',
+          error: imageUploadResult.error,
+        });
+      }
+
+      // Update the post with the correct URL
+      post.image_url = `/images/${imageName}`;
+      await post.save();
       res.status(201).json(post);
     } catch (error) {
       console.error('Error while creating post', error.message);
