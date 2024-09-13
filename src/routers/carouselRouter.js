@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get('/', carouselController.getAllPictures);
 // router.get('/:id', auth, carouselController.getPicture);
-// router.post('/', auth, carouselController.addPicture);
+router.post('/', auth, carouselController.addPicture);
 // router.put('/:id', auth, carouselController.updatePicture);
 // router.delete('/:id', auth, carouselController.deletePicture);
 
