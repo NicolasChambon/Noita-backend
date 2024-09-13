@@ -176,8 +176,6 @@ const carouselController = {
     // Start a transaction
     const t = await sequelize.transaction();
 
-    console.log('reqbodyposition', req.body.direction);
-
     try {
       // Find the 2 pictures to switch
       const pictureA = await Carousel.findByPk(req.params.id, {
@@ -193,7 +191,7 @@ const carouselController = {
         pictureB = await Carousel.findOne({
           where: {
             position: {
-              [Op.eq]: pictureA.position - 1,
+              [Op.eq]: originalAPosition - 1,
             },
           },
           transaction: t,
@@ -202,7 +200,7 @@ const carouselController = {
         pictureB = await Carousel.findOne({
           where: {
             position: {
-              [Op.eq]: pictureA.position + 1,
+              [Op.eq]: originalAPosition + 1,
             },
           },
           transaction: t,
