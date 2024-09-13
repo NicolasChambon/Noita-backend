@@ -38,6 +38,14 @@ const carouselController = {
   },
 
   addPicture: async (req, res) => {
+    // Check if there are 100 pictures in the database
+    const pictureCount = await Carousel.count();
+    if (pictureCount === 100) {
+      return res.status(400).json({
+        errors: ['You can not add more than 100 pictures'],
+      });
+    }
+
     try {
       // Define the last position
       const lastPosition = (await Carousel.max('position')) + 1;
@@ -76,6 +84,15 @@ const carouselController = {
   },
 
   deletePicture: async (req, res) => {
+    // Check if there are 3 pictures in the database
+    const pictureCount = await Carousel.count();
+    if (pictureCount === 3) {
+      return res.status(400).json({
+        errors: ['You need at least 3 pictures in the carousel'],
+      });
+    }
+
+    // Start a transaction
     const t = await sequelize.transaction();
 
     try {
@@ -107,6 +124,7 @@ const carouselController = {
         }
       );
 
+      // Commit the transaction
       await t.commit();
 
       // Delete the image from the file system if transaction is successful
@@ -119,6 +137,98 @@ const carouselController = {
       console.error('Error while deleting picture', error.message);
       res.status(500).json({
         message: 'Error while deleting picture',
+        error: error.message,
+      });
+    }
+  },
+
+  changeImage: async (req, res) => {
+    try {
+      // Find the picture to update
+      const picture = await Carousel.findByPk(req.params.id);
+      if (!picture) {
+        return res.status(404).send({ message: 'Picture not found' });
+      }
+
+      // We use the id of the picture to name the image
+      const imageName = `carousel-${picture.id}.png`;
+      const imageData = req.body.picture64.split(',')[1];
+
+      // Save image to file system
+      const imageUploadResult = await imageUpload(imageData, imageName);
+      if (imageUploadResult !== true) {
+        return res.status(500).json({
+          message: 'Error while uploading image',
+          error: imageUploadResult.error,
+        });
+      }
+      res.status(200).json({ message: 'Image updated' });
+    } catch (error) {
+      console.error('Error while updating picture', error.message);
+      res.status(500).json({
+        message: 'Error while updating picture',
+        error: error.message,
+      });
+    }
+  },
+
+  switchPositions: async (req, res) => {
+    // Start a transaction
+    const t = await sequelize.transaction();
+
+    console.log('reqbodyposition', req.body.direction);
+
+    try {
+      // Find the 2 pictures to switch
+      const pictureA = await Carousel.findByPk(req.params.id, {
+        transaction: t,
+      });
+      if (!pictureA) {
+        return res.status(404).send({ message: 'Picture not found' });
+      }
+      const originalAPosition = pictureA.position;
+
+      let pictureB;
+      if (req.body.direction === 'left') {
+        pictureB = await Carousel.findOne({
+          where: {
+            position: {
+              [Op.eq]: pictureA.position - 1,
+            },
+          },
+          transaction: t,
+        });
+      } else {
+        pictureB = await Carousel.findOne({
+          where: {
+            position: {
+              [Op.eq]: pictureA.position + 1,
+            },
+          },
+          transaction: t,
+        });
+      }
+      const originalBPosition = pictureB.position;
+
+      // Position are unique, so we attribute a temporary position to the pictureA
+      await pictureA.update({ position: 101 }, { transaction: t });
+      await pictureB.update(
+        { position: originalAPosition },
+        { transaction: t }
+      );
+      await pictureA.update(
+        { position: originalBPosition },
+        { transaction: t }
+      );
+
+      // Commit the transaction
+      await t.commit();
+      res.status(200).json({ message: 'Pictures positions switched' });
+    } catch (error) {
+      await t.rollback(); // Rollback the transaction
+      console.error('Error while switching positions', error.message);
+      res.status(500).json({
+        message: 'Error while switching positions',
         error: error.message,
       });
     }
