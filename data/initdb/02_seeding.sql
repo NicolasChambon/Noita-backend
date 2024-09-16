@@ -1,9 +1,9 @@
 BEGIN;
 
 INSERT INTO 
-  "admin" ("id", "username", "password_hash", "created_at", "updated_at") 
+  "admin" ("username", "password_hash", "created_at", "updated_at") 
 VALUES
-  (1,	'Marion',	'$2a$10$jqSmzjF41LYFguGYjA.IX./3X0ZjnFuDhHZDu/5s95O.j8hXMEDr6',	'2024-09-03 09:12:04.416733+02',	NULL);
+  ('Marion',	'$2a$10$jqSmzjF41LYFguGYjA.IX./3X0ZjnFuDhHZDu/5s95O.j8hXMEDr6',	'2024-09-03 09:12:04.416733+02',	NULL);
 
 INSERT INTO 
   "carousel_picture" ("url", "created_at", "updated_at", "position") 
