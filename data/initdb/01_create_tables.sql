@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS "admin" (
 CREATE TABLE IF NOT EXISTS "carousel_picture" (
   "id" int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   "url" text NOT NULL UNIQUE,
+  "position" int NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT now(),
   "updated_at" timestamptz
 );
