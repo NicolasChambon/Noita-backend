@@ -15,7 +15,14 @@ app.use(express.static('public'));
 
 app.use(express.json({ limit: '10mb', extended: true }));
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ['https://noita.ch', 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 // Establish database connection
 // ()() syntax is used to call the asynchronous function directly after defining it
