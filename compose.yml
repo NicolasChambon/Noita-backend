@@ -1,0 +1,50 @@
+services:
+  # api:
+  #   build: .
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - DB_HOST=db
+  #     - DB_PORT=5432
+  #     - DB_NAME=noita
+  #     - DB_USER=postgres
+  #     - DB_PASS=postgres
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #       restart: true
+  #   networks:
+  #     - backend-side
+
+  db:
+    image: postgres:17-alpine
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=noita
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./data/initdb:/docker-entrypoint-initdb.d
+    networks:
+      - backend-side
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - backend-side
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  backend-side: {}

@@ -1,35 +1,84 @@
 import js from '@eslint/js';
-import pluginPrettier from 'eslint-plugin-prettier';
+import typescript from '@typescript-eslint/eslint-plugin';
+import typescriptParser from '@typescript-eslint/parser';
+import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
-import globals from 'globals';
 
 export default [
+  // Base JavaScript recommended rules
   js.configs.recommended,
+
+  // TypeScript files configuration
   {
-    files: ['**/*.js'],
-    ignores: ['node_modules/**'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      ecmaVersion: 'latest', // Support des dernières fonctionnalités ECMAScript
-      sourceType: 'module', // Utilisation des modules (import/export)
-      globals: {
-        ...globals.node,
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './tsconfig.json',
       },
     },
-    rules: {
-      'no-console': 'warn',
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }], // Ignore les variables non utilisées commençant par "_"
-    },
-  },
-  {
     plugins: {
-      prettier: pluginPrettier,
+      '@typescript-eslint': typescript,
+      prettier,
     },
     rules: {
-      'prettier/prettier': 'error', // Lever une erreur en cas de non-respect des règles Prettier
+      // TypeScript recommended rules
+      ...typescript.configs.recommended.rules,
+      ...typescript.configs['recommended-requiring-type-checking'].rules,
+
+      // Prettier integration
+      ...prettierConfig.rules,
+      'prettier/prettier': 'error',
+
+      // Custom rules for your project
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-var-requires': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-floating-promises': 'warn',
+
+      // General rules
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-undef': 'off', // TypeScript handles this
+      'prefer-const': 'error',
+      'no-var': 'error',
     },
   },
+
+  // JavaScript files configuration
   {
-    // Prettier rules to avoid conflicts
-    rules: prettierConfig.rules,
+    files: ['**/*.js', '**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+    plugins: {
+      prettier,
+    },
+    rules: {
+      ...prettierConfig.rules,
+      'prettier/prettier': 'error',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'prefer-const': 'error',
+      'no-var': 'error',
+    },
+  },
+
+  // Global ignores
+  {
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      'coverage/**',
+      '*.min.js',
+      'public/**',
+    ],
   },
 ];
